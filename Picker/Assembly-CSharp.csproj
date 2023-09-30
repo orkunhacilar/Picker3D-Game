@@ -60,6 +60,7 @@
   <ItemGroup>
     <Compile Include="Assets/AsansorDurum.cs" />
     <Compile Include="Assets/Kamera.cs" />
+    <Compile Include="Assets/DonerKol.cs" />
     <Compile Include="Assets/Top.cs" />
     <Compile Include="Assets/GameManager.cs" />
     <Compile Include="Assets/Haberci.cs" />

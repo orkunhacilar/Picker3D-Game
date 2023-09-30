@@ -22,6 +22,9 @@ public class GameManager : MonoBehaviour
     public bool ToplayiciHaraketDurumu;
 
     int AtilanTopSayisi;
+    int ToplamCheckPointSayisi;
+    int MevcutCheckPointIndex;
+    float ParmakPozX;
     [SerializeField] private List<TopAlaniTeknikIslemler> _TopAlaniTeknikIslemler = new List<TopAlaniTeknikIslemler>();
 
 
@@ -29,7 +32,13 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         ToplayiciHaraketDurumu = true;
-        _TopAlaniTeknikIslemler[0].SayiText.text = AtilanTopSayisi + "/" + _TopAlaniTeknikIslemler[0].AtilmasiGerekenTop;
+
+        for(int i=0; i<_TopAlaniTeknikIslemler.Count; i++)
+        {
+            _TopAlaniTeknikIslemler[i].SayiText.text = AtilanTopSayisi + "/" + _TopAlaniTeknikIslemler[i].AtilmasiGerekenTop;
+        }
+
+        ToplamCheckPointSayisi = _TopAlaniTeknikIslemler.Count-1;
     }
 
     // Update is called once per frame
@@ -40,6 +49,34 @@ public class GameManager : MonoBehaviour
         {
             ToplayiciObje.transform.position += 5f * Time.deltaTime * ToplayiciObje.transform.forward; // ileri dogru gitmesi icin komut
 
+            if (Time.timeScale != 0) // OYUN DURMAMISSA
+            {
+                if (Input.touchCount > 0) //Ekranda dokunma var mi yok mu onu kontrol ediyoruz
+                {
+                    Touch touch = Input.GetTouch(0);
+
+                    Vector3 TouchPosition = Camera.main.ScreenToWorldPoint(new Vector3(touch.position.x, touch.position.y, 10f));
+                    switch (touch.phase)
+                    {
+                        case TouchPhase.Began:
+                            ParmakPozX = TouchPosition.x - ToplayiciObje.transform.position.x;
+                            break;
+
+                        case TouchPhase.Moved:
+
+                            if (TouchPosition.x - ParmakPozX > -1.15 && TouchPosition.x - ParmakPozX < 1.15)
+                            {
+                                ToplayiciObje.transform.position = Vector3.Lerp(ToplayiciObje.transform.position, new Vector3(TouchPosition.x - ParmakPozX,
+                                    ToplayiciObje.transform.position.y, ToplayiciObje.transform.position.z), 3f);
+                            }
+                            break;
+
+                    }
+                }
+            }
+        }
+
+                
 
             if (Time.timeScale != 0) // OYUN DURMAMISSA
             {
@@ -55,7 +92,7 @@ public class GameManager : MonoBehaviour
                         ToplayiciObje.transform.position.y, ToplayiciObje.transform.position.z), .05f);
                 }
             }
-        }
+         
 
         
 
@@ -88,24 +125,39 @@ public class GameManager : MonoBehaviour
     public void ToplariSay()
     {
         AtilanTopSayisi++;
-        _TopAlaniTeknikIslemler[0].SayiText.text = AtilanTopSayisi + "/" + _TopAlaniTeknikIslemler[0].AtilmasiGerekenTop;
+        _TopAlaniTeknikIslemler[MevcutCheckPointIndex].SayiText.text = AtilanTopSayisi + "/" + _TopAlaniTeknikIslemler[MevcutCheckPointIndex].AtilmasiGerekenTop;
     }
 
     void AsamaKontrol()
     {
-        if (AtilanTopSayisi >= _TopAlaniTeknikIslemler[0].AtilmasiGerekenTop)
+        if (AtilanTopSayisi >= _TopAlaniTeknikIslemler[MevcutCheckPointIndex].AtilmasiGerekenTop)
         {
             Debug.Log("KAZANDIN");
-            _TopAlaniTeknikIslemler[0].TopAlaniAsansor.Play("Asansor");
 
-            foreach(var item in _TopAlaniTeknikIslemler[0].Toplar)
+            
+            _TopAlaniTeknikIslemler[MevcutCheckPointIndex].TopAlaniAsansor.Play("Asansor");
+
+            foreach(var item in _TopAlaniTeknikIslemler[MevcutCheckPointIndex].Toplar)
             {
                 item.SetActive(false);
             }
+
+            if(MevcutCheckPointIndex == ToplamCheckPointSayisi)
+            {
+                Debug.Log("OYUN BITTI - KAZANDIN PANELI ACIGA CIKABILIR");
+                Time.timeScale = 0;
+            }
+            else
+            {
+                MevcutCheckPointIndex++;
+                AtilanTopSayisi = 0;
+            }
+
+            
         }
         else
         {
-            Debug.Log("Kaybettin");
+            Debug.Log("Kaybettin - Kaybettin paneli aciga cikabilir");
         }
     }
 }
