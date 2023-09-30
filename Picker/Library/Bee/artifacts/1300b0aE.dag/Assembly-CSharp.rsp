@@ -357,10 +357,10 @@
 -analyzer:"/Applications/Unity/Hub/Editor/2022.3.9f1/Unity.app/Contents/Tools/Unity.SourceGenerators/Unity.SourceGenerators.dll"
 "Assets/AsansorDurum.cs"
 "Assets/DonerKol.cs"
-"Assets/GameManager.cs"
-"Assets/Haberci.cs"
-"Assets/Kamera.cs"
-"Assets/Top.cs"
+"Assets/Script/GameManager.cs"
+"Assets/Script/Haberci.cs"
+"Assets/Script/Kamera.cs"
+"Assets/Script/Top.cs"
 -langversion:9.0
 
 /deterministic
