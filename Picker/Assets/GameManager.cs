@@ -11,6 +11,7 @@ public class TopAlaniTeknikIslemler
     public Animator TopAlaniAsansor;
     public TextMeshProUGUI SayiText;
     public int AtilmasiGerekenTop;
+    public GameObject[] Toplar; 
 }
 
 public class GameManager : MonoBehaviour
@@ -18,7 +19,7 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private GameObject ToplayiciObje;
     [SerializeField] private GameObject TopKontrolObjesi;
-    [SerializeField] private bool ToplayiciHaraketDurumu;
+    public bool ToplayiciHaraketDurumu;
 
     int AtilanTopSayisi;
     [SerializeField] private List<TopAlaniTeknikIslemler> _TopAlaniTeknikIslemler = new List<TopAlaniTeknikIslemler>();
@@ -63,6 +64,7 @@ public class GameManager : MonoBehaviour
     public void SiniraGelindi()
     {
         ToplayiciHaraketDurumu = false;
+        Invoke("AsamaKontrol", 2f); // beli bir sure sonra metodu cagirma komutu 2f sure sonra cagir su metodu diyoruz. !
 
         //OverlapBox() -> bir menzil olusturmak
         Collider[] HitColl = Physics.OverlapBox(TopKontrolObjesi.transform.position, TopKontrolObjesi.transform.localScale / 2, Quaternion.identity);
@@ -81,5 +83,29 @@ public class GameManager : MonoBehaviour
 
        
        //gizmos kordinatlara gore cizgiler cekmek
+    }
+
+    public void ToplariSay()
+    {
+        AtilanTopSayisi++;
+        _TopAlaniTeknikIslemler[0].SayiText.text = AtilanTopSayisi + "/" + _TopAlaniTeknikIslemler[0].AtilmasiGerekenTop;
+    }
+
+    void AsamaKontrol()
+    {
+        if (AtilanTopSayisi >= _TopAlaniTeknikIslemler[0].AtilmasiGerekenTop)
+        {
+            Debug.Log("KAZANDIN");
+            _TopAlaniTeknikIslemler[0].TopAlaniAsansor.Play("Asansor");
+
+            foreach(var item in _TopAlaniTeknikIslemler[0].Toplar)
+            {
+                item.SetActive(false);
+            }
+        }
+        else
+        {
+            Debug.Log("Kaybettin");
+        }
     }
 }
